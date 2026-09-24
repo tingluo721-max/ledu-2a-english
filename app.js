@@ -197,6 +197,14 @@
     });
   }
 
+  // 让讲次横条吸附在 header 下方（header 高度随学期切换块变化）
+  function fixSticky() {
+    var header = document.querySelector(".app-header");
+    var bar = document.getElementById("tabBar");
+    if (header && bar) bar.style.top = header.offsetHeight + "px";
+  }
+  window.addEventListener("resize", fixSticky);
+
   // ---------- 初始化 ----------
   if (!COURSES.length) {
     var c = document.getElementById("content");
@@ -207,5 +215,6 @@
     renderProgress();
     renderTabs();
     renderLesson(activeNum);
+    fixSticky();
   }
 })();
