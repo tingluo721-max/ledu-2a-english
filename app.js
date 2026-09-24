@@ -4,6 +4,7 @@
   var COURSES = window.LEDU_COURSES || [];
   var DEFAULT_TERM = "autumn";
   var TERM_KEY = "ledu_2a_current_term";
+  var SUPABASE = window.LEDU_SUPABASE || null;
 
   function courseById(id) {
     for (var i = 0; i < COURSES.length; i++) {
@@ -19,23 +20,68 @@
 
   var course = courseById(termId) || COURSES[0];
   var LESSONS = course ? course.lessons : [];
-  var checkins = loadCheckins();
+  var checkins = loadLocal();
   var activeNum = defaultNum();
 
   function storageKey() { return "ledu_2a_" + (course ? course.id : "x") + "_checkin"; }
 
-  // ---------- 打卡存储 ----------
-  function loadCheckins() {
+  // ---------- 本地存储（离线兜底） ----------
+  function loadLocal() {
     try {
       var raw = localStorage.getItem(storageKey());
       var data = raw ? JSON.parse(raw) : {};
       return (data && typeof data === "object") ? data : {};
-    } catch (e) {
-      return {};
-    }
+    } catch (e) { return {}; }
   }
-  function saveCheckins() {
+  function saveLocal() {
     try { localStorage.setItem(storageKey(), JSON.stringify(checkins)); } catch (e) {}
+  }
+
+  // ---------- 云端存储（Supabase PostgREST） ----------
+  function cloudHeaders() {
+    return {
+      "apikey": SUPABASE.anonKey,
+      "Authorization": "Bearer " + SUPABASE.anonKey,
+      "Content-Type": "application/json"
+    };
+  }
+  function fetchCloud(term) {
+    var url = SUPABASE.url + "/rest/v1/checkins?term=eq." + encodeURIComponent(term) + "&select=term,data";
+    return fetch(url, { headers: cloudHeaders() }).then(function (r) {
+      if (!r.ok) throw new Error("cloud " + r.status);
+      return r.json();
+    });
+  }
+  function pushCloud(term, data) {
+    var url = SUPABASE.url + "/rest/v1/checkins";
+    return fetch(url, {
+      method: "POST",
+      headers: Object.assign(cloudHeaders(), { "Prefer": "resolution=merge-duplicates,return=minimal" }),
+      body: JSON.stringify({ term: term, data: data })
+    });
+  }
+
+  // 打开时以云端为准；云端为空则把本地进度迁移上去；云端不可用则保持本地
+  function syncFromCloud() {
+    if (!SUPABASE || !course) return;
+    var requested = course.id;
+    fetchCloud(requested).then(function (rows) {
+      if (!course || course.id !== requested) return; // 期间已切换学期，丢弃过期结果
+      var row = rows && rows.length ? rows[0] : null;
+      if (row && row.data && typeof row.data === "object") {
+        checkins = row.data;
+        saveLocal();
+        activeNum = defaultNum();
+        renderAll();
+      } else if (Object.keys(checkins).length) {
+        pushCloud(requested, checkins).catch(function () {});
+      }
+    }).catch(function () { /* 无网 / 表未建 → 保持本地 */ });
+  }
+
+  function pushCheckins() {
+    if (!SUPABASE || !course) return;
+    pushCloud(course.id, checkins).catch(function () {});
   }
 
   function isDone(num) { return !!checkins[num]; }
@@ -50,13 +96,14 @@
 
   function toggleCheckin(num) {
     if (checkins[num]) { delete checkins[num]; } else { checkins[num] = true; }
-    saveCheckins();
+    saveLocal();
+    pushCheckins();
     renderTabs();
     renderProgress();
     renderLesson(num);
   }
 
-  // ---------- 渲染：学期侧边栏 ----------
+  // ---------- 渲染：学期切换 ----------
   function renderTermBar() {
     var bar = document.getElementById("termBar");
     if (!bar) return;
@@ -120,7 +167,6 @@
     html += '    <span class="box">' + (isDone(num) ? '✓' : '') + '</span>' + (isDone(num) ? '已学' : '标记已学');
     html += '  </button></div>';
 
-    // 语法 / 技能 / 阅读
     (lesson.grammar || []).forEach(function (g) {
       html += '<section class="section"><h3><span class="dot"></span>' + escapeHtml(g.h) + '</h3>';
       if (g.items && g.items.length) {
@@ -141,7 +187,6 @@
       html += '</section>';
     });
 
-    // 词汇
     if (lesson.vocab && lesson.vocab.length) {
       html += '<section class="section"><h3><span class="dot blue"></span>词汇 Vocabulary</h3>';
       html += '<div class="vocab-grid">';
@@ -153,7 +198,6 @@
       });
       html += '</div></section>';
 
-      // 默写（看中文 → 点开显英文）
       html += '<section class="section"><h3><span class="dot green"></span>默写 Dictation</h3>';
       html += '<p class="dictation-hint">看着中文说 / 写英文，点卡片翻面核对</p>';
       html += '<div class="dictation-grid">';
@@ -172,15 +216,21 @@
 
     content.innerHTML = html;
 
-    // 打卡按钮
     var btn = document.getElementById("checkinBtn");
     if (btn) {
       btn.addEventListener("click", function () { toggleCheckin(num); });
     }
-    // 默写翻卡
     content.querySelectorAll(".flip-card").forEach(function (card) {
       card.addEventListener("click", function () { card.classList.toggle("revealed"); });
     });
+  }
+
+  function renderAll() {
+    renderHeader();
+    renderTermBar();
+    renderProgress();
+    renderTabs();
+    renderLesson(activeNum);
   }
 
   function switchTerm(id) {
@@ -189,23 +239,15 @@
     termId = id;
     course = courseById(id);
     LESSONS = course ? course.lessons : [];
-    checkins = loadCheckins();
+    checkins = loadLocal();
     activeNum = defaultNum();
-    renderHeader();
-    renderTermBar();
-    renderProgress();
-    renderTabs();
-    renderLesson(activeNum);
+    renderAll();
+    fixSticky();
+    syncFromCloud();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
-    });
-  }
-
-  // 让讲次横条吸附在 header 下方（header 高度随学期切换块变化）
+  // 让讲次横条吸附在 header 下方
   function fixSticky() {
     var header = document.querySelector(".app-header");
     var bar = document.getElementById("tabBar");
@@ -213,16 +255,19 @@
   }
   window.addEventListener("resize", fixSticky);
 
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
   // ---------- 初始化 ----------
   if (!COURSES.length) {
     var c = document.getElementById("content");
     if (c) c.innerHTML = '<p class="empty">未能加载内容，请检查 data.js。</p>';
   } else {
-    renderHeader();
-    renderTermBar();
-    renderProgress();
-    renderTabs();
-    renderLesson(activeNum);
+    renderAll();
     fixSticky();
+    syncFromCloud();
   }
 })();
