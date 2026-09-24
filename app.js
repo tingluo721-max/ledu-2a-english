@@ -20,7 +20,7 @@
   var course = courseById(termId) || COURSES[0];
   var LESSONS = course ? course.lessons : [];
   var checkins = loadCheckins();
-  var activeNum = LESSONS.length ? LESSONS[0].num : null;
+  var activeNum = defaultNum();
 
   function storageKey() { return "ledu_2a_" + (course ? course.id : "x") + "_checkin"; }
 
@@ -39,6 +39,14 @@
   }
 
   function isDone(num) { return !!checkins[num]; }
+
+  // 默认打开「第一个未打卡」的讲次；全部打卡则回到第一讲
+  function defaultNum() {
+    for (var i = 0; i < LESSONS.length; i++) {
+      if (!isDone(LESSONS[i].num)) return LESSONS[i].num;
+    }
+    return LESSONS.length ? LESSONS[0].num : null;
+  }
 
   function toggleCheckin(num) {
     if (checkins[num]) { delete checkins[num]; } else { checkins[num] = true; }
@@ -182,7 +190,7 @@
     course = courseById(id);
     LESSONS = course ? course.lessons : [];
     checkins = loadCheckins();
-    activeNum = LESSONS.length ? LESSONS[0].num : null;
+    activeNum = defaultNum();
     renderHeader();
     renderTermBar();
     renderProgress();
