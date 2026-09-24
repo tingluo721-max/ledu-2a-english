@@ -1,48 +1,83 @@
 (function () {
   "use strict";
 
-  var LESSONS = window.LEDU_LESSONS || [];
-  var STORAGE_KEY = "ledu_2a_summer_checkin";
+  var COURSES = window.LEDU_COURSES || [];
+  var DEFAULT_TERM = "autumn";
+  var TERM_KEY = "ledu_2a_current_term";
+
+  function courseById(id) {
+    for (var i = 0; i < COURSES.length; i++) {
+      if (COURSES[i].id === id) return COURSES[i];
+    }
+    return null;
+  }
+
+  // 恢复上次学期，否则默认秋季
+  var saved = null;
+  try { saved = localStorage.getItem(TERM_KEY); } catch (e) {}
+  var termId = (saved && courseById(saved)) ? saved : DEFAULT_TERM;
+
+  var course = courseById(termId) || COURSES[0];
+  var LESSONS = course ? course.lessons : [];
+  var checkins = loadCheckins();
+  var activeNum = LESSONS.length ? LESSONS[0].num : null;
+
+  function storageKey() { return "ledu_2a_" + (course ? course.id : "x") + "_checkin"; }
 
   // ---------- 打卡存储 ----------
   function loadCheckins() {
     try {
-      var raw = localStorage.getItem(STORAGE_KEY);
+      var raw = localStorage.getItem(storageKey());
       var data = raw ? JSON.parse(raw) : {};
       return (data && typeof data === "object") ? data : {};
     } catch (e) {
       return {};
     }
   }
-  function saveCheckins(obj) {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); } catch (e) {}
+  function saveCheckins() {
+    try { localStorage.setItem(storageKey(), JSON.stringify(checkins)); } catch (e) {}
   }
-
-  var checkins = loadCheckins();
 
   function isDone(num) { return !!checkins[num]; }
 
   function toggleCheckin(num) {
     if (checkins[num]) { delete checkins[num]; } else { checkins[num] = true; }
-    saveCheckins(checkins);
+    saveCheckins();
     renderTabs();
     renderProgress();
-    renderLesson(num); // 更新当前讲的按钮状态
+    renderLesson(num);
   }
 
-  // ---------- 渲染 ----------
-  var activeNum = LESSONS.length ? LESSONS[0].num : null;
+  // ---------- 渲染：学期侧边栏 ----------
+  function renderTermBar() {
+    var bar = document.getElementById("termBar");
+    if (!bar) return;
+    var old = bar.querySelectorAll(".term-tab");
+    for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+    COURSES.forEach(function (c) {
+      var b = document.createElement("button");
+      b.className = "term-tab" + (c.id === termId ? " active" : "");
+      b.textContent = c.label;
+      b.setAttribute("aria-label", "切换到" + c.label);
+      b.addEventListener("click", function () { switchTerm(c.id); });
+      bar.appendChild(b);
+    });
+  }
 
+  function renderHeader() {
+    var t = document.getElementById("mainTitle");
+    if (t) t.textContent = "乐读英语 · 2A " + (course ? course.label : "");
+  }
+
+  // ---------- 渲染：进度 / 讲次 / 内容 ----------
   function renderProgress() {
     var done = LESSONS.filter(function (l) { return isDone(l.num); }).length;
     var total = LESSONS.length;
     var pct = total ? (done / total) : 0;
     var ring = document.getElementById("ringFg");
-    if (ring) {
-      ring.style.strokeDashoffset = String(97.4 * (1 - pct));
-    }
+    if (ring) ring.style.strokeDashoffset = String(97.4 * (1 - pct));
     var txt = document.getElementById("progressText");
-    if (txt) { txt.textContent = done + "/" + total; }
+    if (txt) txt.textContent = done + "/" + total;
   }
 
   function renderTabs() {
@@ -77,7 +112,7 @@
     html += '    <span class="box">' + (isDone(num) ? '✓' : '') + '</span>' + (isDone(num) ? '已学' : '标记已学');
     html += '  </button></div>';
 
-    // 语法 / 技能
+    // 语法 / 技能 / 阅读
     (lesson.grammar || []).forEach(function (g) {
       html += '<section class="section"><h3><span class="dot"></span>' + escapeHtml(g.h) + '</h3>';
       if (g.items && g.items.length) {
@@ -124,7 +159,7 @@
     }
 
     if (lesson.vocab && !lesson.vocab.length) {
-      html += '<p class="empty">本讲为剑二（Movers）技能课，无词汇 / 默写，重点掌握题型与句型。</p>';
+      html += '<p class="empty">本讲为技能课，无词汇 / 默写，重点掌握题型与句型。</p>';
     }
 
     content.innerHTML = html;
@@ -140,6 +175,22 @@
     });
   }
 
+  function switchTerm(id) {
+    if (id === termId) return;
+    try { localStorage.setItem(TERM_KEY, id); } catch (e) {}
+    termId = id;
+    course = courseById(id);
+    LESSONS = course ? course.lessons : [];
+    checkins = loadCheckins();
+    activeNum = LESSONS.length ? LESSONS[0].num : null;
+    renderHeader();
+    renderTermBar();
+    renderProgress();
+    renderTabs();
+    renderLesson(activeNum);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
@@ -147,9 +198,12 @@
   }
 
   // ---------- 初始化 ----------
-  if (!LESSONS.length) {
-    document.getElementById("content").innerHTML = '<p class="empty">未能加载内容，请检查 data.js。</p>';
+  if (!COURSES.length) {
+    var c = document.getElementById("content");
+    if (c) c.innerHTML = '<p class="empty">未能加载内容，请检查 data.js。</p>';
   } else {
+    renderHeader();
+    renderTermBar();
     renderProgress();
     renderTabs();
     renderLesson(activeNum);

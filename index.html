@@ -3,33 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>乐读英语 · 2A 夏季知识锦囊</title>
+  <title>乐读英语 · 2A 知识锦囊</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="app-header">
-    <div class="header-top">
-      <div>
-        <h1>乐读英语 · 2A 夏季</h1>
-        <p class="subtitle">知识锦囊 · 随时随地复习</p>
+  <aside class="term-bar" id="termBar" aria-label="学期切换">
+    <div class="term-brand">2A</div>
+  </aside>
+
+  <div class="app">
+    <header class="app-header">
+      <div class="header-top">
+        <div>
+          <h1 id="mainTitle">乐读英语 · 2A</h1>
+          <p class="subtitle">知识锦囊 · 随时随地复习</p>
+        </div>
+        <div class="progress-ring" id="progressRing" title="学习进度">
+          <svg viewBox="0 0 36 36" width="56" height="56">
+            <circle class="ring-bg" cx="18" cy="18" r="15.5" />
+            <circle class="ring-fg" id="ringFg" cx="18" cy="18" r="15.5" />
+          </svg>
+          <span class="progress-text" id="progressText">0/4</span>
+        </div>
       </div>
-      <div class="progress-ring" id="progressRing" title="学习进度">
-        <svg viewBox="0 0 36 36" width="56" height="56">
-          <circle class="ring-bg" cx="18" cy="18" r="15.5" />
-          <circle class="ring-fg" id="ringFg" cx="18" cy="18" r="15.5" />
-        </svg>
-        <span class="progress-text" id="progressText">0/12</span>
-      </div>
-    </div>
-  </header>
+    </header>
 
-  <nav class="tab-bar" id="tabBar" aria-label="讲次导航"></nav>
+    <nav class="tab-bar" id="tabBar" aria-label="讲次导航"></nav>
 
-  <main class="content" id="content"></main>
+    <main class="content" id="content"></main>
 
-  <footer class="app-footer">
-    <p>打卡进度仅保存在本设备浏览器 · 数据来源：2A 夏季知识锦囊</p>
-  </footer>
+    <footer class="app-footer">
+      <p>打卡进度仅保存在本设备浏览器 · 数据来源：2A 夏季 / 秋季知识锦囊</p>
+    </footer>
+  </div>
 
   <script src="data.js"></script>
   <script src="app.js"></script>

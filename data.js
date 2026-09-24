@@ -1,6 +1,6 @@
-// 乐读英语 · 2A 夏季 · 知识锦囊 结构化内容
-// 由原始 PDF（语法知识点总结 + 12 讲知识锦囊）整理而成
-window.LEDU_LESSONS = [
+// 乐读英语 · 2A 知识锦囊 结构化内容（夏季 12 讲 + 秋季 4 讲）
+// 由原始 PDF（语法知识点总结 + 知识锦囊）整理而成
+window.LEDU_SUMMER = [
   {
     num: 1,
     title: "be called 句型",
@@ -389,4 +389,198 @@ window.LEDU_LESSONS = [
     ],
     vocab: []
   }
+];
+
+// ===================== 2A 秋季 · 知识锦囊 =====================
+window.LEDU_AUTUMN = [
+  {
+    num: 1,
+    title: "some / any 句型",
+    badge: "语法 · 数字词汇",
+    grammar: [
+      {
+        h: "some / any + 可数名词复数 / 不可数名词",
+        items: [
+          "some 用于肯定句：There are some buses.",
+          "any 用于否定句和疑问句：There aren't any horses.",
+          "特殊记：Would you like 表建议 / 邀请时用 some：Would you like some juice?",
+          "there be 句型中同样适用 some / any"
+        ],
+        examples: [
+          { en: "There are some buses.", zh: "有一些公交车。" },
+          { en: "There aren't any horses.", zh: "没有马。" },
+          { en: "Have you got any salad?", zh: "你有沙拉吗？" },
+          { en: "Are there any cats?", zh: "有猫吗？" }
+        ]
+      },
+      {
+        h: "阅读 Reading · Looking for buses",
+        items: [
+          "Who? → Lele and Kuan；Where? → Bus stop；When? → Wednesday",
+          "Why are they going to the bus stop? → To find the bus numbers.",
+          "What buses do they see? → Bus No. 78, 37, 64 and 42.",
+          "What bus do they wait for? → Bus No. 49（周三晚上不停靠，最后走回家）"
+        ]
+      }
+    ],
+    vocab: [
+      { w: "thirty", zh: "三十 (30)", ex: "30/40/50 特殊记" },
+      { w: "forty", zh: "四十 (40)", ex: "没有字母 u" },
+      { w: "fifty", zh: "五十 (50)", ex: "fif + ty" },
+      { w: "sixty", zh: "六十 (60)", ex: "six + ty" },
+      { w: "seventy", zh: "七十 (70)", ex: "seven + ty" },
+      { w: "eighty", zh: "八十 (80)", ex: "只有一个 t" },
+      { w: "ninety", zh: "九十 (90)", ex: "nine + ty" },
+      { w: "one hundred", zh: "一百 (100)", ex: "hundred" },
+      { w: "thirty-three", zh: "三十三 (33)", ex: "几十几 = 几十 + 个位（ty + 数字）" }
+    ]
+  },
+  {
+    num: 2,
+    title: "形容词比较级（直/去/双/改）",
+    badge: "语法 · 形容词词汇",
+    grammar: [
+      {
+        h: "形容词的比较级（两者之间作比较）",
+        items: [
+          "标志词：than（比）",
+          "五指结构：A + be + 比较级 + than + B（A 和 B 作比较，中间用比较级）"
+        ],
+        examples: [
+          { en: "The bee is stronger than the butterfly.", zh: "蜜蜂比蝴蝶强壮。" },
+          { en: "The lion is quicker than the panda.", zh: "狮子比熊猫跑得快。" },
+          { en: "The butterfly is prettier than the frog.", zh: "蝴蝶比青蛙漂亮。" }
+        ]
+      },
+      {
+        h: "比较级变化规则：直 / 去 / 双 / 改",
+        items: [
+          "直：大部分形容词直接 + er（loud→louder、quiet→quieter、slow→slower）",
+          "去：以不发音 e 结尾，去 e + er（cute→cuter、nice→nicer、large→larger）",
+          "双：重读闭音节，双写尾字母 + er（big→bigger、fat→fatter、hot→hotter）",
+          "改：辅音 + y 结尾，改 y 为 i + er（pretty→prettier、happy→happier、heavy→heavier）"
+        ],
+        note: "本节课只需重点掌握「直」和「改」两种变化规则"
+      },
+      {
+        h: "阅读 Reading · Alice's blog（我爱的动物）",
+        items: [
+          "Sausage：old, slow, good at sleeping（爱睡觉）",
+          "Chips：young and quick, good at sleeping, eats mice",
+          "anaconda（水蟒）：big and long, eats fish, birds and crocodiles",
+          "cornsnake（玉米蛇）：beautiful, eats small animals",
+          "hippo（河马）：big, heavy and strong"
+        ]
+      }
+    ],
+    vocab: [
+      { w: "slow", zh: "慢的", ex: "Pandas are slow." },
+      { w: "quick", zh: "快的", ex: "The lion is quick." },
+      { w: "loud", zh: "大声的", ex: "They are loud." },
+      { w: "quiet", zh: "安静的", ex: "be quiet 保持安静" },
+      { w: "strong", zh: "强壮的", ex: "The man is strong." },
+      { w: "weak", zh: "虚弱的", ex: "The mouse is weak." },
+      { w: "heavy", zh: "重的、沉的", ex: "It is heavy." },
+      { w: "light", zh: "轻的", ex: "It is light." },
+      { w: "pretty", zh: "漂亮的", ex: "The parrot is pretty." },
+      { w: "beautiful", zh: "漂亮的", ex: "a beautiful bird" },
+      { w: "dangerous", zh: "危险的", ex: "The snake is dangerous." }
+    ]
+  },
+  {
+    num: 3,
+    title: "形容词比较级（more + 形容词）",
+    badge: "语法 · 形容词词汇",
+    grammar: [
+      {
+        h: "形容词比较级 I（多音节词）",
+        items: [
+          "标志词：than",
+          "单音节 / 部分双音节词：+ er",
+          "多音节 / 部分双音节词：more + 形容词原级",
+          "特殊变化：good → better、bad → worse"
+        ],
+        examples: [
+          { en: "Football is more boring than movies.", zh: "足球比电影更无聊。" },
+          { en: "He is more careful than Banana Man.", zh: "他比香蕉超人更细心。" }
+        ]
+      },
+      {
+        h: "比较级变化方式（口诀）",
+        items: [
+          "直：大部分形容词 直接 + er（louder）",
+          "去：e 结尾且不发音 去 e + er（cuter）",
+          "双：重读闭音节 双写尾字母 + er（hotter、bigger、thinner）",
+          "改：辅音 + y 结尾 改 y 为 i + er（happier）",
+          "特：特殊变化 特殊记（good → better）",
+          "加：所有多音节 more + 形容词（more difficult）"
+        ]
+      },
+      {
+        h: "阅读 Reading · Sally Star",
+        items: [
+          "Lele is walking to school happy, listening to music.",
+          "Kuan is older；Alice is more famous；Sally Star is more clever.",
+          "The book is expensive.",
+          "At lunch：reading her book / listening to music"
+        ]
+      }
+    ],
+    vocab: [
+      { w: "interesting", zh: "有趣的", ex: "more interesting" },
+      { w: "boring", zh: "无聊的", ex: "more boring" },
+      { w: "busy", zh: "忙碌的", ex: "busier" },
+      { w: "careful", zh: "小心的、仔细的", ex: "more careful" },
+      { w: "cheap", zh: "便宜的", ex: "cheaper" },
+      { w: "difficult", zh: "困难的", ex: "more difficult" },
+      { w: "easy", zh: "简单的、容易的", ex: "easier" },
+      { w: "famous", zh: "著名的、出名的", ex: "more famous" },
+      { w: "brave", zh: "勇敢的", ex: "braver" },
+      { w: "important", zh: "重要的", ex: "more important" },
+      { w: "clever", zh: "聪明的", ex: "cleverer / more clever" }
+    ]
+  },
+  {
+    num: 4,
+    title: "情态动词 shall",
+    badge: "语法 · 动词短语",
+    grammar: [
+      {
+        h: "情态动词 shall 的用法",
+        items: [
+          "结构：Shall + I / we + 动词原形",
+          "shall 用于征求对方意见，意思是「要不要我做…？」「我可以做…吗？」"
+        ],
+        examples: [
+          { en: "Shall I clean the cage?", zh: "要不要我清洗笼子？" },
+          { en: "Shall I go on a trip?", zh: "我可以去旅游吗？" },
+          { en: "Shall I help you?", zh: "要不要我帮助你？" }
+        ]
+      },
+      {
+        h: "阅读 Reading · Shall I walk the dog?",
+        items: [
+          "Who? → Kuan, Lele, Mag, Mrs Li；Where? → at Lele's house",
+          "What? → walk the dog / wash the car / clean the cage / turn off the cooker / bring the shopping inside",
+          "How? → Mrs Li isn't happy"
+        ]
+      }
+    ],
+    vocab: [
+      { w: "call Grandma", zh: "给奶奶打电话", ex: "call sb. 给某人打电话" },
+      { w: "turn on the light", zh: "打开灯", ex: "turn on + 电器 = 打开…" },
+      { w: "turn off the cooker", zh: "关掉炉灶 / 炊具", ex: "turn off + 电器 = 关闭…" },
+      { w: "clean the cage", zh: "清洗笼子", ex: "close the cage 关笼子" },
+      { w: "feed the dog", zh: "喂狗", ex: "feed the fish / panda" },
+      { w: "help you wash the car", zh: "帮你洗车", ex: "help sb. 帮助某人" },
+      { w: "bring the shopping inside", zh: "把买的东西拿进来", ex: "bring sth. 拿某物" },
+      { w: "invite Grandpa for dinner", zh: "邀请爷爷吃晚饭", ex: "invite sb. for breakfast/lunch/dinner" }
+    ]
+  }
+];
+
+// 课程注册表（顺序决定侧边栏顺序；app.js 默认选秋季）
+window.LEDU_COURSES = [
+  { id: "autumn", label: "秋季", lessons: window.LEDU_AUTUMN },
+  { id: "summer", label: "夏季", lessons: window.LEDU_SUMMER }
 ];
